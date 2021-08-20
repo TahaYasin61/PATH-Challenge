@@ -35,8 +35,7 @@ class OrderRepository
      */
     public function shipOrder(Request $request) // updating the order with shipping date
     {
-        $user = $this->user->where('token', $request->header('token'))->first();
-        $order = $this->order->where('user_id', $user->id)->where('id', $request->order_id)->first();
+        $order = $this->order->where('id', $request->order_id)->first();
         if ($order) {
             $orderProducts = $this->orderProduct->where('order_id', $order->id)->get();
             $shippedOrder = $order->update([
@@ -44,7 +43,6 @@ class OrderRepository
             ]);
             $responseData['status'] = 1;
             $responseData['order'] = $shippedOrder;
-            $responseData['user'] = $user;
             $responseData['order-products'] = $orderProducts;
             $responseData['message'] = 'Order shipped';
             return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
@@ -62,17 +60,24 @@ class OrderRepository
     public function orderDetail(Request $request) // show detail of an order with given id
     {
         $user = $this->user->where('token', $request->header('token'))->first();
-        $order = $this->order->where('user_id', $user->id)->where('id', $request->order_id)->first();
 
-        if ($order) {
-            $orderProducts = $this->orderProduct->where('order_id', $order->id)->get();
-            $responseData['status'] = 1;
-            $responseData['order'] = $order;
-            $responseData['order-products'] = $orderProducts;
-            return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+
+        if ($user) {
+            $order = $this->order->where('user_id', $user->id)->where('id', $request->order_id)->first();
+            if ($order) {
+                $orderProducts = $this->orderProduct->where('order_id', $order->id)->get();
+                $responseData['status'] = 1;
+                $responseData['order'] = $order;
+                $responseData['order-products'] = $orderProducts;
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            } else {
+                $responseData['status'] = 0;
+                $responseData['message'] = 'Order not found';
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            }
         } else {
-            $responseData['status'] = 0;
-            $responseData['message'] = 'Order not found';
+            $responseData['status'] = 2;
+            $responseData['message'] = 'User not found';
             return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
         }
     }
@@ -84,15 +89,23 @@ class OrderRepository
     public function allOrders(Request $request) // showing all orders that belongs to the user
     {
         $user = $this->user->where('token', $request->header('token'))->first();
-        $orders = $this->order->where('user_id', $user->id)->with('orderProducts')->get();
 
-        if ($orders->count() > 0 && $user) {
-            $responseData['status'] = 1;
-            $responseData['orders'] = $orders;
-            return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+        if ($user) {
+            $orders = $this->order->where('user_id', $user->id)->with('orderProducts')->get();
+            if ($orders->count() > 0) {
+                $responseData['status'] = 1;
+                $responseData['user'] = $user;
+                $responseData['orders'] = $orders;
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            } else {
+                $responseData['status'] = 0;
+                $responseData['user'] = $user;
+                $responseData['message'] = 'No order was found';
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            }
         } else {
-            $responseData['status'] = 0;
-            $responseData['message'] = 'No order found';
+            $responseData['status'] = 2;
+            $responseData['message'] = 'User not found';
             return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
         }
     }

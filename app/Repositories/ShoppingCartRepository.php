@@ -56,21 +56,27 @@ class ShoppingCartRepository
         $product = $this->product->where('id', $request->product_id)->first();
 
         if ($user) {
-            $this->shoppingCart->create([
-                'user_id' => $user->id,
-                'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
-                'product_price' => $product->product_price,
-                'total_price' => $product->product_price * $request->quantity
-            ]);
-            $responseData['status'] = 1;
-            $responseData['product'] = $product;
-            $responseData['user'] = $user;
-            $responseData['message'] = 'Product added to cart';
-            return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            if ($product) {
+                $this->shoppingCart->create([
+                    'user_id' => $user->id,
+                    'product_id' => $request->product_id,
+                    'quantity' => $request->quantity,
+                    'product_price' => $product->product_price,
+                    'total_price' => $product->product_price * $request->quantity
+                ]);
+                $responseData['status'] = 1;
+                $responseData['product'] = $product;
+                $responseData['user'] = $user;
+                $responseData['message'] = 'Product added to cart';
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            } else {
+                $responseData['status'] = 0;
+                $responseData['message'] = 'An error occurred while adding the product to the cart';
+                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+            }
         } else {
             $responseData['status'] = 2;
-            $responseData['message'] = 'An error occurred while adding the product to the cart';
+            $responseData['message'] = 'User not found';
             return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
         }
     }
@@ -82,10 +88,10 @@ class ShoppingCartRepository
     public function confirmCart(Request $request) // confirming the shopping cart and creating an order
     {
         $user = $this->user->where('token', $request->header('token'))->first();
-        $userAddress = $this->userAddress->where('user_id', $user->id)->first();
-        $products = $this->shoppingCart->where('user_id', $user->id)->get();
 
         if ($user) {
+            $userAddress = $this->userAddress->where('user_id', $user->id)->first();
+            $products = $this->shoppingCart->where('user_id', $user->id)->get();
             $order = $this->order->create([
                 'order_code' => rand(1000000000, 9999999999),
                 'user_id' => $user->id,
