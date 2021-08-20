@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Http\Requests\Api\UserLoginRequest;
 use App\Models\Order;
 use App\Models\OrderProduct;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -117,29 +118,37 @@ class OrderRepository
     public function updateOrder(Request $request) // updating the product in the order with given id
     {
         $user = $this->user->where('token', $request->header('token'))->first();
-        $order = $this->order->where('user_id', $user->id)->where('id', $request->order_id)->first();
 
-        if ($order && $order->shipping_date == null && $user) {
-            $orderProduct = $this->orderProduct->where('id', $request->order_product_id)->where('order_id', $order->id)->first();
-            if ($orderProduct) {
-                $orderProduct->update([
-                    'product_id' => $request->product_id ?: $orderProduct->product_id,
-                    'quantity' => $request->quantity ?: $orderProduct->quantity
-                ]);
-                $responseData['status'] = 1;
-                $responseData['order-product'] = $orderProduct;
-                $responseData['message'] = 'Order product updated';
-                return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+        if ($user)
+        {
+            $order = $this->order->where('user_id', $user->id)->where('id', $request->order_id)->first();
+            if ($order && $order->shipping_date == null) {
+                $orderProduct = $this->orderProduct->where('id', $request->order_product_id)->where('order_id', $order->id)->first();
+                if ($orderProduct) {
+                    $orderProduct->update([
+                        'product_id' => $request->product_id ?: $orderProduct->product_id,
+                        'quantity' => $request->quantity ?: $orderProduct->quantity
+                    ]);
+                    $responseData['status'] = 1;
+                    $responseData['order-product'] = $orderProduct;
+                    $responseData['message'] = 'Order product updated';
+                    return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+                } else {
+                    $responseData['status'] = 0;
+                    $responseData['message'] = 'Order product not found';
+                    return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
+                }
             } else {
-                $responseData['status'] = 0;
-                $responseData['message'] = 'Order product not found';
+                $responseData['status'] = 3;
+                $responseData['message'] = 'Order not found';
                 return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
             }
         } else {
             $responseData['status'] = 2;
-            $responseData['message'] = 'Order not found';
+            $responseData['message'] = 'User not found';
             return response()->json($responseData, 200, [], JSON_UNESCAPED_UNICODE);
         }
+
     }
 
 
