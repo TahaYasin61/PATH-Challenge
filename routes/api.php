@@ -19,8 +19,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/login',[\App\Http\Controllers\Api\UserController::class,'login'])->name('login');
+
 Route::post('/add-to-cart',[\App\Http\Controllers\Api\ShoppingCartController::class,'addProductToCart'])->name('add-to-cart');
 Route::post('/confirm-cart',[\App\Http\Controllers\Api\ShoppingCartController::class,'confirmCart'])->name('confirm-cart');
+
 Route::post('/ship-order',[\App\Http\Controllers\Api\OrderController::class,'shipOrder'])->name('ship-order');
 Route::post('/order-detail',[\App\Http\Controllers\Api\OrderController::class,'orderDetail'])->name('order-detail');
 Route::get('/all-orders',[\App\Http\Controllers\Api\OrderController::class,'allOrders'])->name('all-orders');

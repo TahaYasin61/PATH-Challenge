@@ -2,14 +2,9 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Api\UserLoginRequest;
-use App\Models\Order;
-use App\Models\User;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
 
 class OrderService
 {

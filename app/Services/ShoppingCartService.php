@@ -2,14 +2,8 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Api\UserLoginRequest;
-use App\Models\Product;
-use App\Models\ShoppingCart;
-use App\Models\User;
 use App\Repositories\ShoppingCartRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class ShoppingCartService
 {

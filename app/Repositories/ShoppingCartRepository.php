@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Http\Requests\Api\UserLoginRequest;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -11,7 +10,6 @@ use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class ShoppingCartRepository
 {
