@@ -71,3 +71,7 @@ It would be better to refresh all your migrations and run the database seeder wi
 This project also contains Swagger API documentation. In order to view it, go to /api/documentation route after starting your local server 
 (ex: http://127.0.0.1:8000/api/documentation)
 
+If you encounter with an error while viewing Swagger documentation, write down the code given below to generate Swagger codes
+
+```php artisan l5-swagger:generate```
+
