@@ -24,7 +24,7 @@ This project was made with Laravel. The project contains the following contents 
 
 In order to install the project on your computer, first clone the project
 
-```git clone git@github.com:TahaYasin61/PATH-Challenge.git```
+```git clone git@github.com:TahaYasin61/path-challenge.git```
 
 Then go to your repo folder
 
